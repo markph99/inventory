@@ -1,0 +1,82 @@
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white shadow-lg">
+    <div class="p-6">
+      <h1 class="text-xl font-semibold text-gray-700">Settings</h1>
+    </div>
+    <nav class="mt-6">
+      <button
+        (click)="selectTab('room')"
+        class="block w-full text-left py-2.5 px-4 text-gray-700 hover:bg-gray-200">
+        Room Name Registration
+      </button>
+      <button
+        (click)="selectTab('items')"
+        class="block w-full text-left py-2.5 px-4 text-gray-700 hover:bg-gray-200">
+        Items Registration
+      </button>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-10">
+    <!-- Room Name Registration Section -->
+    <div *ngIf="selectedTab === 'room'">
+      <h2 class="text-2xl font-bold mb-4">Room Name Registration</h2>
+      <form (ngSubmit)="registerRoom()" #roomForm="ngForm" class="bg-white p-6 rounded shadow-md">
+        <div class="mb-4">
+          <label for="roomName" class="block text-gray-700">Room Name</label>
+          <input
+            type="text"
+            id="roomName"
+            name="roomName"
+            [(ngModel)]="roomName"
+            required
+            class="mt-1 block w-full border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter room name">
+        </div>
+        <button
+          type="submit"
+          [disabled]="!roomForm.valid"
+          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+          Register Room
+        </button>
+      </form>
+    </div>
+
+    <!-- Items Registration Section -->
+    <div *ngIf="selectedTab === 'items'">
+      <h2 class="text-2xl font-bold mb-4">Items Registration</h2>
+      <form (ngSubmit)="registerItem()" #itemForm="ngForm" class="bg-white p-6 rounded shadow-md">
+        <div class="mb-4">
+          <label for="itemName" class="block text-gray-700">Item Name</label>
+          <input
+            type="text"
+            id="itemName"
+            name="itemName"
+            [(ngModel)]="itemName"
+            required
+            class="mt-1 block w-full border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter item name">
+        </div>
+        <div class="mb-4">
+          <label for="itemDescription" class="block text-gray-700">Item Description</label>
+          <textarea
+            id="itemDescription"
+            name="itemDescription"
+            [(ngModel)]="itemDescription"
+            required
+            class="mt-1 block w-full border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Enter item description">
+          </textarea>
+        </div>
+        <button
+          type="submit"
+          [disabled]="!itemForm.valid"
+          class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+          Register Item
+        </button>
+      </form>
+    </div>
+  </main>
+</div>

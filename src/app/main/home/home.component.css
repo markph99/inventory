@@ -1,0 +1,44 @@
+.typing-animation {
+  display: inline-block;
+  overflow: hidden;           /* Ensures only the typed portion is visible */
+  white-space: nowrap;        /* Keeps the text on one line */
+  border-right: 0.15em solid #ff9800; /* Simulated caret */
+
+  /* Start with zero width, animate to full text and then back */
+  width: 0;
+  animation:
+    typing 5s steps(40, end) infinite,
+    blink-caret 0.75s step-end infinite,
+    gradient 8s ease infinite;
+
+  /* Gradient background for color wave effect */
+  background: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Keyframe for typewriter effect:
+   - Types out the text (0% to 40%),
+   - Holds the full text (40% to 60%),
+   - Then erases it (60% to 100%). */
+@keyframes typing {
+  0% { width: 0; }
+  40% { width: 100%; }
+  60% { width: 100%; }
+  100% { width: 0; }
+}
+
+/* Keyframe for blinking caret */
+@keyframes blink-caret {
+  from, to { border-color: transparent; }
+  50% { border-color: #ff9800; }
+}
+
+/* Keyframe for gradient animation:
+   - Creates a smooth, continuously shifting color wave */
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
