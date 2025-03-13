@@ -32,7 +32,6 @@ export class HomeComponent implements OnInit {
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
-
     this.loadInventories();
   }
 
@@ -63,14 +62,14 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  // Helper method to calculate the total quantity of products in an inventory record
+  // Helper method to calculate total quantity of products for an inventory record
   totalQuantity(inventory: Inventory): number {
     return inventory.products
       ? inventory.products.reduce((total, prod) => total + prod.quantity, 0)
       : 0;
   }
 
-  // Helper method to join product names
+  // Helper method to get product names as a comma-separated string
   getProductNames(inventory: Inventory): string {
     return inventory.products && inventory.products.length > 0
       ? inventory.products.map(prod => prod.itemName).join(', ')
