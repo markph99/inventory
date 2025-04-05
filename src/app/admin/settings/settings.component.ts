@@ -5,14 +5,19 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-settings',
-  standalone: true, // if using Angular standalone components; otherwise remove
+  standalone: true,
   imports: [ReactiveFormsModule, FormsModule, CommonModule],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css']
 })
 export class SettingsComponent {
   selectedTab: 'room' | 'items' = 'room';
+
+  // Room registration properties
   roomName: string = '';
+  roomPassword: string = '';
+
+  // Item registration properties
   itemName: string = '';
   itemDescription: string = '';
 
@@ -23,12 +28,16 @@ export class SettingsComponent {
   }
 
   registerRoom() {
-    if (this.roomName) {
-      this.settingsService.registerRoom({ roomName: this.roomName }).subscribe(
+    if (this.roomName && this.roomPassword) {
+      this.settingsService.registerRoom({
+        roomName: this.roomName,
+        roomPassword: this.roomPassword
+      }).subscribe(
         res => {
           console.log('Room registered:', res);
           // Optionally reset the form or show a success message
           this.roomName = '';
+          this.roomPassword = '';
         },
         err => {
           console.error('Error registering room:', err);
@@ -39,7 +48,10 @@ export class SettingsComponent {
 
   registerItem() {
     if (this.itemName && this.itemDescription) {
-      this.settingsService.registerItem({ itemName: this.itemName, itemDescription: this.itemDescription }).subscribe(
+      this.settingsService.registerItem({
+        itemName: this.itemName,
+        itemDescription: this.itemDescription
+      }).subscribe(
         res => {
           console.log('Item registered:', res);
           // Optionally reset the form or show a success message

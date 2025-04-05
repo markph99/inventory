@@ -1,15 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { MainComponent } from './main/main.component';
-import { InventoryComponent } from './inventory/inventory.component';
-import { ItemsComponent } from './items/items.component';
-import { SettingsComponent } from './settings/settings.component';
 import { authguardGuard } from '../guards/authguard.guard';
+import { InventoryComponent } from './inventory/inventory.component';
+import { MaintenanceComponent } from './maintenance/maintenance.component';
+import { ItemManagementComponent } from './item-management/item-management.component';
+
 const routes: Routes = [
   {
     path: '',
-    title: 'Admin',
+    title: 'Room',
     component: MainComponent,
+    canActivate: [authguardGuard],
     children: [
       {
         path: '',
@@ -18,21 +20,23 @@ const routes: Routes = [
       },
       {
         path: 'inventory',
+        title: 'Inventory',
         component: InventoryComponent,
         canActivate: [authguardGuard]
       },
       {
-        path: 'items',
-        component: ItemsComponent,
+        path: 'maintenance',
+        title: 'Maintenance',
+        component: MaintenanceComponent,
         canActivate: [authguardGuard]
       },
       {
-        path: 'settings',
-        component: SettingsComponent,
+        path: 'item-management',
+        title: 'Item Management',
+        component: ItemManagementComponent,
         canActivate: [authguardGuard]
       }
-    ],
-    canActivate: [authguardGuard]
+    ]
   }
 ];
 
@@ -40,4 +44,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class AdminRoutingModule { }
+export class RoomRoutingModule { }

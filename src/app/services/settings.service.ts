@@ -11,9 +11,14 @@ export class SettingsService {
 
   constructor(private http: HttpClient) {}
 
-  // Register a new room
-  registerRoom(roomData: { roomName: string }): Observable<any> {
+  // Register a new room (now accepts roomPassword)
+  registerRoom(roomData: { roomName: string, roomPassword: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/rooms`, roomData);
+  }
+
+  // Login for a room
+  loginRoom(loginData: { roomName: string, roomPassword: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/rooms/login`, loginData);
   }
 
   // Fetch all rooms (for the location dropdown)

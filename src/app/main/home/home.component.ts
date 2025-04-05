@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthServiceService } from '../../services/auth-service.service';
+import { SettingsService } from '../../services/settings.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Inventory } from '../../models/inventory';
-import { ItemService } from '../../services/item.service';
 
 @Component({
   selector: 'app-home',
@@ -14,30 +13,55 @@ import { ItemService } from '../../services/item.service';
 })
 export class HomeComponent implements OnInit {
   title = 'Inventory Management System';
-  showLoginModal: boolean = false;
-  loginForm!: FormGroup;
+  showLoginModal: boolean = true;
+
+  // Toggle between 'admin' and 'room' login
+  loginType: 'admin' | 'room' = 'admin';
+
+  // Admin login form
+  adminLoginForm!: FormGroup;
+
+  // Room login form
+  roomLoginForm!: FormGroup;
+
   loginError: string = '';
 
-  inventories: Inventory[] = [];
+  // New properties for toggling password visibility
+  adminPasswordVisible: boolean = false;
+  roomPasswordVisible: boolean = false;
+
+  // Toggle functions for password visibility
+  toggleAdminPasswordVisibility(): void {
+    this.adminPasswordVisible = !this.adminPasswordVisible;
+  }
+
+  toggleRoomPasswordVisibility(): void {
+    this.roomPasswordVisible = !this.roomPasswordVisible;
+  }
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthServiceService,
-    private router: Router,
-    private inventoryService: ItemService
+    private settingsService: SettingsService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.loginForm = this.fb.group({
+    this.adminLoginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
-    this.loadInventories();
+
+    this.roomLoginForm = this.fb.group({
+      roomName: ['', Validators.required],
+      roomPassword: ['', Validators.required]
+    });
   }
 
-  onLogin(): void {
-    if (this.loginForm.invalid) return;
-    const { username, password } = this.loginForm.value;
+  // Admin login method
+  onAdminLogin(): void {
+    if (this.adminLoginForm.invalid) return;
+    const { username, password } = this.adminLoginForm.value;
     this.authService.login({ username, password }).subscribe({
       next: (res) => {
         this.authService.setToken(res.token);
@@ -46,33 +70,46 @@ export class HomeComponent implements OnInit {
       },
       error: (err) => {
         this.loginError = err.error.message || 'Login failed. Please try again.';
-        console.error('Login error:', err);
       }
     });
   }
 
-  loadInventories(): void {
-    this.inventoryService.getInventories().subscribe({
-      next: (data: Inventory[]) => {
-        this.inventories = data;
+  // Room login method (updated to store room id)
+  onRoomLogin(): void {
+    if (this.roomLoginForm.invalid) return;
+    const { roomName, roomPassword } = this.roomLoginForm.value;
+    this.settingsService.loginRoom({ roomName, roomPassword }).subscribe({
+      next: async (res) => {
+        // Store the token
+        this.authService.setToken(res.token);
+
+        // Dynamically import jwt-decode.
+        const jwtModule: any = await import('jwt-decode');
+        const jwtDecode = jwtModule.jwtDecode;
+        if (typeof jwtDecode !== 'function') {
+          return;
+        }
+        const decode = jwtDecode.bind(null);
+        const decodedToken: any = decode(res.token);
+
+        // Save the room name extracted from the token payload.
+        if (decodedToken.roomName) {
+          this.authService.setRoomName(decodedToken.roomName);
+        }
+
+        // Attempt to extract the room id from several possible property names.
+        const roomId = decodedToken.roomId || decodedToken.id || decodedToken.room_id;
+        if (roomId && typeof roomId === 'string' && roomId.trim() !== '') {
+          this.authService.setRoomId(roomId);
+        }
+
+        this.showLoginModal = false;
+        // Navigate to the room-specific page.
+        this.router.navigate(['/room']);
       },
       error: (err) => {
-        console.error('Failed to load inventories:', err);
+        this.loginError = err.error.message || 'Room login failed. Please try again.';
       }
     });
-  }
-
-  // Helper method to calculate total quantity of products for an inventory record
-  totalQuantity(inventory: Inventory): number {
-    return inventory.products
-      ? inventory.products.reduce((total, prod) => total + prod.quantity, 0)
-      : 0;
-  }
-
-  // Helper method to get product names as a comma-separated string
-  getProductNames(inventory: Inventory): string {
-    return inventory.products && inventory.products.length > 0
-      ? inventory.products.map(prod => prod.itemName).join(', ')
-      : '';
   }
 }

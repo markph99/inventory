@@ -11,6 +11,10 @@ export const routes: Routes = [
     loadChildren: () => import('./admin/admin-routing.module').then(m => m.AdminRoutingModule)
   },
   {
+    path: 'room',
+    loadChildren: () => import('./room/room-routing.module').then(m => m.RoomRoutingModule)
+  },
+  {
     path: '**',
     component: NotFoundComponent
   }
